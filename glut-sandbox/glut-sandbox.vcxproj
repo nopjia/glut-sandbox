@@ -39,9 +39,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>.\externals;$(IncludePath)</IncludePath>
+    <ExecutablePath>.\externals;$(ExecutablePath)</ExecutablePath>
+    <ReferencePath>.\externals;$(ReferencePath)</ReferencePath>
+    <LibraryPath>.\externals;$(LibraryPath)</LibraryPath>
+    <SourcePath>.\externals;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>.\externals;$(IncludePath)</IncludePath>
+    <ExecutablePath>.\externals;$(ExecutablePath)</ExecutablePath>
+    <ReferencePath>.\externals;$(ReferencePath)</ReferencePath>
+    <LibraryPath>.\externals;$(LibraryPath)</LibraryPath>
+    <SourcePath>.\externals;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
