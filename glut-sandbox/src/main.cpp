@@ -17,7 +17,7 @@ using namespace std;
 int mouseX, mouseY;
 int mouseButtons = 0;
 float rotateX = 0.0, rotateY = 0.0;
-float translateZ = -1.0;
+float translateZ = -5.0;
 
 // global methods
 void initGL();
