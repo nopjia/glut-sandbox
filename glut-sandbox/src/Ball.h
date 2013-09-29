@@ -7,11 +7,11 @@ using namespace glm;
 
 #define C_G           9.8f
 #define C_BOUNCE      0.8f
-#define C_SLIDE_MU_S  0.5f
+#define C_SLIDE_MU_S  0.2f
 #define C_ROLL_MU_S   0.01f
 
-#define B_H_WIDTH     40.0f
-#define B_H_HEIGHT    30.0f
+#define B_H_WIDTH     30.0f
+#define B_H_HEIGHT    20.0f
 
 class Ball {
 public:
@@ -22,9 +22,9 @@ public:
    void testUpdate();
 
    // simulation
-   void simStep(float deltaT);
+   void simStep(const float deltaT);
    void intersectBounds();
-   void intersectBalls();
+   void intersectBalls(const Ball* balls, const uint count);
    
    float radius;
    float mass;

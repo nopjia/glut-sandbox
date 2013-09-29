@@ -16,9 +16,9 @@ namespace {
   int mouseButtons = 0;
 
   // camera
-  float rotateX = 30.0;
+  float rotateX = 45.0;
   float rotateY = 0.0;
-  float translateZ = -100.0;
+  float translateZ = -60.0;
 
   uint timer = 0.0f, timerElapsed = 0.0f;
   uint frameCount = 0, timeBase = 0;  // fps calc
@@ -190,7 +190,7 @@ void motion(int x, int y) {
 
 void initScene() {
   balls.push_back(Ball(0.0f, 0.0f, 0.0f));
-  balls[0].v.x = 3.0f;
-  balls[0].v.z = 3.0f;
+  balls[0].v.x = 10.0f;
+  balls[0].v.z = 50.0f;
   //balls[0].w.z = -50.0f;
 }

@@ -40,17 +40,21 @@ void Ball::testUpdate() {
 }
 
 void Ball::intersectBounds() {
-  if (p.x >= B_H_WIDTH)
+  if (p.x >= B_H_WIDTH-radius)
     v.x = -C_BOUNCE*v.x;
-  else if (p.x <= -B_H_WIDTH)
+  else if (p.x <= -B_H_WIDTH+radius)
     v.x = -C_BOUNCE*v.x;
-  if (p.z >= B_H_HEIGHT)
+  if (p.z >= B_H_HEIGHT-radius)
     v.z = -C_BOUNCE*v.z;
-  else if (p.z <= -B_H_HEIGHT)
+  else if (p.z <= -B_H_HEIGHT+radius)
     v.z = -C_BOUNCE*v.z;
 }
 
-void Ball::simStep(float deltaT) {
+void intersectBalls(const Ball* balls, const uint count) {
+
+}
+
+void Ball::simStep(const float deltaT) {
 
   // 1. COMPUTE FORCES
   
