@@ -1,27 +1,36 @@
-#include <windows.h>
-#include <iostream>
-#include <gl/GL.h>
-#include <gl/GLU.h>
-#include <glut.h>
+#include "Utils.h"
+#include "Ball.h"
 
 using namespace std;
 
 // constants
-#define WINDOW_W 512
-#define WINDOW_H 512
+#define WINDOW_W 800
+#define WINDOW_H 480
 #define CAM_FOV  45.0f
 #define CAM_NEAR 0.0f
 #define CAM_FAR  1000.0f
 
 // global vars
-int mouseX, mouseY;
-int mouseButtons = 0;
-float rotateX = 0.0, rotateY = 0.0;
-float translateZ = -5.0;
+namespace {
+  int mouseX, mouseY;
+  int mouseButtons = 0;
+
+  // camera
+  float rotateX = 30.0;
+  float rotateY = 0.0;
+  float translateZ = -100.0;
+
+  uint timer = 0.0f, timerElapsed = 0.0f;
+  uint frameCount = 0, timeBase = 0;  // fps calc
+
+  vector<Ball> balls;
+}
 
 // global methods
 void initGL();
+void initScene();
 void resize(int width, int height);
+void update();
 void draw();
 void keyboard(unsigned char key, int x, int y);
 void mouse(int button, int state, int x, int y);
@@ -34,16 +43,16 @@ int main( int argc, char** argv) {
   glutInitWindowSize(WINDOW_W, WINDOW_H);
   glutCreateWindow("GL Window");
 
-  // init GL
-  initGL();
-
   // register callbacks  
-  glutDisplayFunc(draw);
-  glutIdleFunc(draw);
+  glutDisplayFunc(update);
+  glutIdleFunc(update);
   glutReshapeFunc(resize);
   glutKeyboardFunc(keyboard);
   glutMouseFunc(mouse);
   glutMotionFunc(motion);
+
+  initGL();
+  initScene();
 
   // start main loop
   glutMainLoop();
@@ -64,6 +73,8 @@ void initGL() {
   glShadeModel(GL_SMOOTH);
   glEnable(GL_CULL_FACE);
   glEnable(GL_TEXTURE_2D);
+
+  glPointSize(3.0f);
 }
 
 void resize(int width, int height) {  
@@ -81,6 +92,38 @@ void resize(int width, int height) {
 	glLoadIdentity();
 }
 
+void getFPS() {
+  ++frameCount;
+  uint currTime = glutGet(GLUT_ELAPSED_TIME);
+
+  uint elapsed = currTime - timeBase;
+  if (elapsed > 1000) {
+    float fps = frameCount*1000.0f/elapsed;
+    uint millisecs = elapsed / frameCount;
+    timeBase = currTime;
+    frameCount = 0;
+
+    char buffer[32];
+    sprintf(buffer, "%.2f : %i", fps, millisecs);
+    glutSetWindowTitle(buffer);
+  }
+}
+
+void update() {
+  getFPS(); 
+
+  // compute time
+  timerElapsed = glutGet(GLUT_ELAPSED_TIME) - timer;
+  timer += timerElapsed;
+
+  // update objects
+  for (int i=0; i<balls.size(); ++i)
+    //balls[i].testUpdate();
+    balls[i].simStep(timerElapsed / 1000.0f);
+
+  draw();
+}
+
 void draw() {
   // clear color and depth buffers
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,14 +136,17 @@ void draw() {
   glRotatef(rotateX, 1.0, 0.0, 0.0);
   glRotatef(rotateY, 0.0, 1.0, 0.0);
 
-  // draw geometry
-  GLUquadric* sphere;
-  sphere = gluNewQuadric();
-  gluQuadricDrawStyle(sphere, GLU_LINE );
-  glPushMatrix();
-  glTranslatef(0.0f, 0.0f,0.0f);
-  gluSphere(sphere, 0.30, 20, 20);
-  glPopMatrix();
+  // draw objects
+  for (int i=0; i<balls.size(); ++i)
+    balls[i].draw();
+
+  // draw bounds
+  glBegin( GL_POINTS);
+  glVertex3f(B_H_WIDTH, 0.0f, B_H_HEIGHT);
+  glVertex3f(-B_H_WIDTH, 0.0f, B_H_HEIGHT);
+  glVertex3f(-B_H_WIDTH, 0.0f, -B_H_HEIGHT);
+  glVertex3f(B_H_WIDTH, 0.0f, -B_H_HEIGHT);
+  glEnd();
 
   glutSwapBuffers();
 }
@@ -140,4 +186,11 @@ void motion(int x, int y) {
 
   mouseX = x;
   mouseY = y;
+}
+
+void initScene() {
+  balls.push_back(Ball(0.0f, 0.0f, 0.0f));
+  balls[0].v.x = 3.0f;
+  balls[0].v.z = 3.0f;
+  //balls[0].w.z = -50.0f;
 }

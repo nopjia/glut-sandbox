@@ -10,5 +10,16 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Ball.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Ball.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
