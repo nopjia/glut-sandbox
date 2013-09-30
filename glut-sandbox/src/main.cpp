@@ -16,7 +16,7 @@ namespace {
   int mouseButtons = 0;
 
   // camera
-  float rotateX = 0.0;
+  float rotateX = 90.0;
   float rotateY = 0.0;
   float translateZ = -60.0;
 
@@ -121,6 +121,11 @@ void update() {
     //balls[i].testUpdate();
     balls[i].simStep(timerElapsed / 1000.0f);
 
+  // intersect objects
+  for (int i=0; i<balls.size(); ++i)
+    for (int j=i+1; j<balls.size(); ++j)
+      balls[i].intersectBall(balls[j]);
+
   draw();
 }
 
@@ -190,7 +195,8 @@ void motion(int x, int y) {
 
 void initScene() {
   balls.push_back(Ball(0.0f, 0.0f, 0.0f));
-  balls[0].v.x = 10.0f;
+  balls[0].v.x = 20.0f;
   //balls[0].v.z = 10.0f;
   //balls[0].w.y = -10.0f;
+  balls.push_back(Ball(10.0f, 0.0f, 0.5f));
 }

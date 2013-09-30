@@ -29,7 +29,7 @@
 #include <glm/gtx/random.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#define EPS 0.0001f
+#define EPS 0.01f
 
 using namespace glm;
 
@@ -39,19 +39,30 @@ inline bool equalsZero(float x) {
   return x < EPS && x > -EPS;
 }
 
+inline bool equalsZero(float x, float eps) {
+  return x < eps && x > -eps;
+}
+
 inline bool equalsZero(vec3 v) {
   return 
-    EQUALS_ZERO(v.x) &&
-    EQUALS_ZERO(v.y) &&
-    EQUALS_ZERO(v.z);
+    equalsZero(v.x) &&
+    equalsZero(v.y) &&
+    equalsZero(v.z);
+}
+
+inline bool equalsZero(vec3 v, float eps) {
+  return 
+    equalsZero(v.x, eps) &&
+    equalsZero(v.y, eps) &&
+    equalsZero(v.z, eps);
 }
 
 inline bool equalsZero(quat q) {
   return 
-    EQUALS_ZERO(q.w) &&
-    EQUALS_ZERO(q.x) &&
-    EQUALS_ZERO(q.y) &&
-    EQUALS_ZERO(q.z);
+    equalsZero(q.w) &&
+    equalsZero(q.x) &&
+    equalsZero(q.y) &&
+    equalsZero(q.z);
 }
 
 #endif

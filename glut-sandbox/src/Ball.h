@@ -8,7 +8,7 @@ using namespace glm;
 #define C_G           9.8f
 #define C_BOUNCE      0.8f
 #define C_SLIDE_MU    2.2f
-#define C_ROLL_MU     0.01f
+#define C_ROLL_MU     0.05f
 #define C_WALL_MU     0.2f  // fake wall control
 
 #define B_H_WIDTH     30.0f
@@ -24,8 +24,8 @@ public:
 
    // simulation
    void simStep(const float deltaT);
-   void intersectBounds();
-   void intersectBalls(const Ball* balls, const uint count);
+   bool intersectBounds();
+   bool intersectBall(Ball& other);
    
    float radius;
    float mass;

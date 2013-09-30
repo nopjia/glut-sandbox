@@ -39,7 +39,8 @@ void Ball::testUpdate() {
    q = angleAxis(angle, axis);
 }
 
-void Ball::intersectBounds() {
+bool Ball::intersectBounds() {
+
   vec3 sideR;  // unit vec ball center to wall, for angular
 
   // linear
@@ -70,28 +71,47 @@ void Ball::intersectBounds() {
     v.y = 0.0f;
     w += cross(sideR, -C_WALL_MU*mass*deltaVn*normalize(vp));
     //torque += cross(sideR, -C_WALL_MU*mass*deltaVn*normalize(vp));
+        
+    return true;
   }
+
+  return false;
 }
 
-void intersectBalls(const Ball* balls, const uint count) {
+// NOTE: also modifies other ball
+bool Ball::intersectBall(Ball& other) {
 
+  if (distance(p, other.p) < radius+other.radius) {
+    vec3 nor = normalize(p-other.p);
+    vec3 tan = cross(nor, vec3(0.0f, 1.0f, 0.0f));
+    vec3 newV = dot(v,tan)*tan + dot(other.v,nor)*nor;
+    vec3 newOtherV = dot(other.v,tan)*tan + dot(v,nor)*nor;
+
+    v = newV;
+    other.v = newOtherV;
+
+    return true;
+  }
+
+  return false;
 }
 
 void Ball::simStep(const float deltaT) {
 
   // 1. COMPUTE FORCES
-  
-  const vec3 downR = vec3(0.0f, -radius, 0.0f);  // center to ground
 
-  // rolling friction
-  if (!equalsZero(v))
-    force += -C_ROLL_MU*mass*C_G*normalize(v);
+  const vec3 downR = vec3(0.0f, -radius, 0.0f);  // center to ground
 
   // sliding friction  
   vec3 vp = cross(w,downR) + v;  // perimeter velocity
   if (!equalsZero(vp)) {
     force += -C_SLIDE_MU*mass*C_G*normalize(vp);
     torque += cross(downR,-C_SLIDE_MU*mass*C_G*radius*normalize(vp));
+  }  
+  
+  // rolling friction
+  if (!equalsZero(v)) {
+    force += -C_ROLL_MU*mass*C_G*normalize(v);
   }
 
   // 2. DERIVATIVES
@@ -110,7 +130,7 @@ void Ball::simStep(const float deltaT) {
   { // special case quaternions
     float wlen = length(w);
     if (wlen > 0.0f) {
-      dq = angleAxis(wlen, w/wlen);
+      dq = angleAxis(wlen, w/wlen);   // TODO: where's deltaT???!?
     }
     q = normalize(dq * q);
   }
@@ -119,6 +139,6 @@ void Ball::simStep(const float deltaT) {
 
   force = vec3(0.0f);
   torque = vec3(0.0f);
-  
+
   intersectBounds();
 }
