@@ -16,7 +16,7 @@ namespace {
   int mouseButtons = 0;
 
   // camera
-  float rotateX = 45.0;
+  float rotateX = 0.0;
   float rotateY = 0.0;
   float translateZ = -60.0;
 
@@ -191,6 +191,6 @@ void motion(int x, int y) {
 void initScene() {
   balls.push_back(Ball(0.0f, 0.0f, 0.0f));
   balls[0].v.x = 10.0f;
-  balls[0].v.z = 50.0f;
-  //balls[0].w.z = -50.0f;
+  //balls[0].v.z = 10.0f;
+  //balls[0].w.y = -10.0f;
 }
