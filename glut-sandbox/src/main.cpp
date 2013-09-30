@@ -4,8 +4,8 @@
 using namespace std;
 
 // constants
-#define WINDOW_W 800
-#define WINDOW_H 480
+#define WINDOW_W 1024
+#define WINDOW_H 576
 #define CAM_FOV  45.0f
 #define CAM_NEAR 0.0f
 #define CAM_FAR  1000.0f
@@ -20,8 +20,11 @@ namespace {
   float rotateY = 0.0;
   float translateZ = -60.0;
 
-  uint timer = 0.0f, timerElapsed = 0.0f;
   uint frameCount = 0, timeBase = 0;  // fps calc
+
+  uint timer = 0, timerElapsed = 0;
+  int timeSimRemainder = 65535;
+  const int timeSimDelta = 20;
 
   vector<Ball> balls;
 }
@@ -116,15 +119,22 @@ void update() {
   timerElapsed = glutGet(GLUT_ELAPSED_TIME) - timer;
   timer += timerElapsed;
 
-  // update objects
-  for (int i=0; i<balls.size(); ++i)
-    //balls[i].testUpdate();
-    balls[i].simStep(timerElapsed / 1000.0f);
+  // compute sim time
+  if (timeSimRemainder == 65535) timeSimRemainder = 0;
+  timeSimRemainder += timerElapsed;
+  
+  // run sim
+  for (; timeSimRemainder>0; timeSimRemainder-=timeSimDelta) {
+    // update objects
+    for (int i=0; i<balls.size(); ++i)
+      //balls[i].testUpdate();
+      balls[i].simStep(0.01f);  // = 10/1000
 
-  // intersect objects
-  for (int i=0; i<balls.size(); ++i)
-    for (int j=i+1; j<balls.size(); ++j)
-      balls[i].intersectBall(balls[j]);
+    // intersect objects
+    for (int i=0; i<balls.size(); ++i)
+      for (int j=i+1; j<balls.size(); ++j)
+        balls[i].intersectBall(balls[j]);
+  }
 
   draw();
 }
@@ -186,7 +196,7 @@ void motion(int x, int y) {
     rotateY += dx * 0.2f;
   }
   else if (mouseButtons & 0x4) {
-    translateZ += dy * 0.01f;
+    translateZ += dy * 0.1f;
   }
 
   mouseX = x;
@@ -194,9 +204,10 @@ void motion(int x, int y) {
 }
 
 void initScene() {
-  balls.push_back(Ball(0.0f, 0.0f, 0.0f));
-  balls[0].v.x = 20.0f;
-  //balls[0].v.z = 10.0f;
-  //balls[0].w.y = -10.0f;
-  balls.push_back(Ball(10.0f, 0.0f, 0.5f));
+  balls.push_back(Ball(-15.0f, 0.0f, 0.0f));
+  balls[0].v.x = 50.0f;
+  //balls[0].w.z = 10.0f;
+  
+  balls.push_back(Ball(10.0f, 0.0f, 1.0f));
+  balls.push_back(Ball(10.0f, 0.0f, -1.0f));
 }

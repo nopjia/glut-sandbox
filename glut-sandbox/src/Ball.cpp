@@ -45,18 +45,22 @@ bool Ball::intersectBounds() {
 
   // linear
   if (p.x >= B_H_WIDTH-radius) {
+    p.x = B_H_WIDTH-radius-EPS;
     v.x = -C_BOUNCE*v.x;
-    sideR = vec3(1.0f, 0.0f, 0.0f);
+    sideR = vec3(1.0f, 0.0f, 0.0f);    
   }
   else if (p.x <= -B_H_WIDTH+radius) {
+    p.x = -B_H_WIDTH+radius+EPS;
     v.x = -C_BOUNCE*v.x;
     sideR = vec3(-1.0f, 0.0f, 0.0f);
   }
   if (p.z >= B_H_HEIGHT-radius) {
+    p.z = B_H_HEIGHT-radius-EPS;
     v.z = -C_BOUNCE*v.z;
     sideR = vec3(0.0f, 0.0f, 1.0f);
   }
   else if (p.z <= -B_H_HEIGHT+radius) {
+    p.z = -B_H_HEIGHT+radius+EPS;
     v.z = -C_BOUNCE*v.z;
     sideR = vec3(0.0f, 0.0f, -1.0f);
   }
@@ -69,7 +73,7 @@ bool Ball::intersectBounds() {
     // fake, no forces/torques, use C_WALL_MU to control
     v += -C_WALL_MU*mass*deltaVn*normalize(vp);
     v.y = 0.0f;
-    w += cross(sideR, -C_WALL_MU*mass*deltaVn*normalize(vp));
+    w += cross(sideR, -C_WALL_MU*mass*deltaVn*normalize(vp)); // TODO: must not REVERSE!
     //torque += cross(sideR, -C_WALL_MU*mass*deltaVn*normalize(vp));
         
     return true;
@@ -81,22 +85,37 @@ bool Ball::intersectBounds() {
 // NOTE: also modifies other ball
 bool Ball::intersectBall(Ball& other) {
 
-  if (distance(p, other.p) < radius+other.radius) {
-    vec3 nor = normalize(p-other.p);
-    vec3 tan = cross(nor, vec3(0.0f, 1.0f, 0.0f));
-    vec3 newV = dot(v,tan)*tan + dot(other.v,nor)*nor;
-    vec3 newOtherV = dot(other.v,tan)*tan + dot(v,nor)*nor;
+  if (distance(p, other.p) > radius+other.radius)
+    return false;
+    
+  vec3 nor = normalize(p-other.p);
+  vec3 tan = cross(nor, vec3(0.0f, 1.0f, 0.0f));
 
-    v = newV;
-    other.v = newOtherV;
+  // linear
+  vec3 newV = dot(v,tan)*tan + dot(other.v,nor)*nor;
+  vec3 newOtherV = dot(other.v,tan)*tan + dot(v,nor)*nor;
 
-    return true;
-  }
+  // fake angular stop on straight collision
+  //if (dot(v,nor)-1 < EPS)
+  //  w += -dot(w,tan)*tan;
 
-  return false;
+  // angular
+  float deltaVn = abs(dot(newV-v,nor));  // change in v in normal dir
+  if (!equalsZero(other.w))
+    w += cross(nor, -C_BALL_MU*mass*deltaVn*normalize(cross(other.w,nor)));
+  if (!equalsZero(w))
+    other.w += cross(nor, -C_BALL_MU*mass*deltaVn*normalize(cross(w,nor)));
+    
+  // set velocities
+  v = newV;
+  other.v = newOtherV;
+
+  return true;
 }
 
 void Ball::simStep(const float deltaT) {
+
+  intersectBounds();
 
   // 1. COMPUTE FORCES
 
@@ -107,12 +126,13 @@ void Ball::simStep(const float deltaT) {
   if (!equalsZero(vp)) {
     force += -C_SLIDE_MU*mass*C_G*normalize(vp);
     torque += cross(downR,-C_SLIDE_MU*mass*C_G*radius*normalize(vp));
-  }  
+  }
   
   // rolling friction
-  if (!equalsZero(v)) {
-    force += -C_ROLL_MU*mass*C_G*normalize(v);
-  }
+  if (!equalsZero(v))
+    force += -C_ROLL_V_MU*mass*C_G*normalize(v);
+  if (!equalsZero(w))
+    torque += -C_ROLL_W_MU*mass*C_G*normalize(w);
 
   // 2. DERIVATIVES
   
@@ -123,22 +143,20 @@ void Ball::simStep(const float deltaT) {
 
   // 3. UPDATE STATES
 
-  p += deltaT * dp;  
+  p += deltaT * dp;
   v += deltaT * dv;
   w += deltaT * dw;
 
   { // special case quaternions
     float wlen = length(w);
     if (wlen > 0.0f) {
-      dq = angleAxis(wlen, w/wlen);   // TODO: where's deltaT???!?
+      dq = angleAxis(wlen, w/wlen);   // TODO: where's deltaT???!?      
+      q = normalize(dq * q);
     }
-    q = normalize(dq * q);
   }
 
   // 4. CLEAR FORCES
 
   force = vec3(0.0f);
   torque = vec3(0.0f);
-
-  intersectBounds();
 }

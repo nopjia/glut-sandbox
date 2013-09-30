@@ -7,9 +7,11 @@ using namespace glm;
 
 #define C_G           9.8f
 #define C_BOUNCE      0.8f
-#define C_SLIDE_MU    2.2f
-#define C_ROLL_MU     0.05f
-#define C_WALL_MU     0.2f  // fake wall control
+#define C_SLIDE_MU    25.2f
+#define C_ROLL_V_MU   0.1f
+#define C_ROLL_W_MU   0.1f
+#define C_WALL_MU     0.2f  // fake angular wall collision control
+#define C_BALL_MU     0.2f  // fake angular ball collision control
 
 #define B_H_WIDTH     30.0f
 #define B_H_HEIGHT    20.0f

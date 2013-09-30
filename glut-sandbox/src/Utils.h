@@ -29,7 +29,7 @@
 #include <glm/gtx/random.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#define EPS 0.01f
+#define EPS 0.001f
 
 using namespace glm;
 
