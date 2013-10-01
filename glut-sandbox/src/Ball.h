@@ -8,8 +8,8 @@ using namespace glm;
 #define C_G             9.8f
 #define C_BOUNCE        0.99f
 #define C_SLIDE_MU      5.0f
-#define C_ROLL_V_MU     0.5f
-#define C_ROLL_W_MU     0.5f
+#define C_ROLL_V_MU     0.7f
+#define C_ROLL_W_MU     0.7f
 #define C_WALL_MU       0.2f  // fake angular v collision control
 #define C_BALL_MU       0.2f
 #define C_WALL_W_CANCEL 0.9f  // canceling out normal angular v

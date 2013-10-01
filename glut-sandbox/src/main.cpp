@@ -18,7 +18,7 @@ namespace {
   // camera
   float rotateX = 0.0f;
   float rotateY = 0.0f;
-  float translateZ = -60.0f;
+  float translateZ = 0.0f;
 
   uint frameCount = 0, timeBase = 0;  // fps calc
 
@@ -174,6 +174,10 @@ void draw() {
 void keyboard(unsigned char key, int x, int y) {
   switch(key) {
   case(27) : exit(0);
+  case(82) :          // shift R
+    balls.clear();
+    initScene();
+    printf("reset scene\n");
   }
 }
 
@@ -209,14 +213,19 @@ void motion(int x, int y) {
 }
 
 void initScene() {
-  balls.push_back(Ball(-15.0f, 0.0f, 0.0f));
-  balls[0].v.x = 120.0f;
-  //balls[0].w.z = -200.0f;  
-  
-  balls.push_back(Ball(15.0f, 0.0f, 1.01f));
-  balls.push_back(Ball(15.0f, 0.0f, -1.01f));
-  balls.push_back(Ball(17.1f, 0.0f, 1.01f));
-  balls.push_back(Ball(17.1f, 0.0f, -1.01f));
-
+  // setup fake camera
   rotateX = 90.0f;
+  rotateY = 0.0f;
+  translateZ = -60.0f;
+
+  balls.push_back(Ball(-15.0f, 0.0f, 0.0f));
+  balls[0].v.x = 100.0f;
+  balls[0].w.z = -200.0f;
+  
+  balls.push_back(Ball(15.0f, 0.0f, 0.0f));
+
+  balls.push_back(Ball(17.1f, 0.0f, 1.02f));
+  balls.push_back(Ball(17.1f, 0.0f, -1.02f));
+  balls.push_back(Ball(19.2f, 0.0f, 1.02f));
+  balls.push_back(Ball(19.2f, 0.0f, -1.02f));
 }
