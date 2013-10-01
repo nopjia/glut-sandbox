@@ -5,13 +5,16 @@
 
 using namespace glm;
 
-#define C_G           9.8f
-#define C_BOUNCE      0.99f
-#define C_SLIDE_MU    5.0f
-#define C_ROLL_V_MU   0.1f
-#define C_ROLL_W_MU   0.1f
-#define C_WALL_MU     0.2f  // fake angular wall collision control
-#define C_BALL_MU     0.2f  // fake angular ball collision control
+#define C_G             9.8f
+#define C_BOUNCE        0.99f
+#define C_SLIDE_MU      5.0f
+#define C_ROLL_V_MU     0.5f
+#define C_ROLL_W_MU     0.5f
+#define C_WALL_MU       0.2f  // fake angular v collision control
+#define C_BALL_MU       0.2f
+#define C_WALL_W_CANCEL 0.9f  // canceling out normal angular v
+#define C_BALL_W_CANCEL 0.6f
+#define C_STOP_TH       0.75f // stopping ball threshold
 
 #define B_H_WIDTH     30.0f
 #define B_H_HEIGHT    20.0f

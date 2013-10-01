@@ -76,8 +76,6 @@ void initGL() {
   glShadeModel(GL_SMOOTH);
   glEnable(GL_CULL_FACE);
   glEnable(GL_TEXTURE_2D);
-
-  glPointSize(3.0f);
 }
 
 void resize(int width, int height) {  
@@ -163,7 +161,7 @@ void draw() {
     balls[i].draw();
 
   // draw bounds
-  glBegin( GL_POINTS);
+  glBegin(GL_LINE_LOOP);
   glVertex3f(B_H_WIDTH, 0.0f, B_H_HEIGHT);
   glVertex3f(-B_H_WIDTH, 0.0f, B_H_HEIGHT);
   glVertex3f(-B_H_WIDTH, 0.0f, -B_H_HEIGHT);
@@ -211,14 +209,14 @@ void motion(int x, int y) {
 }
 
 void initScene() {
-  balls.push_back(Ball(0.0f, 0.0f, 0.0f));
-  balls[0].v.x = 100.0f;
-  //balls[0].v.z = 20.0f;
-  //balls[0].w.y = 80.0f;
+  balls.push_back(Ball(-15.0f, 0.0f, 0.0f));
+  balls[0].v.x = 120.0f;
+  //balls[0].w.z = -200.0f;  
   
-  balls.push_back(Ball(15.0f, 0.0f, 0.5f));
-  //balls[0].w.y = 80.0f;
-  //balls.push_back(Ball(10.0f, 0.0f, -1.0f));
+  balls.push_back(Ball(15.0f, 0.0f, 1.01f));
+  balls.push_back(Ball(15.0f, 0.0f, -1.01f));
+  balls.push_back(Ball(17.1f, 0.0f, 1.01f));
+  balls.push_back(Ball(17.1f, 0.0f, -1.01f));
 
   rotateX = 90.0f;
 }

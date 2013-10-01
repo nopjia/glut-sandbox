@@ -74,12 +74,10 @@ bool Ball::intersectBounds() {
     v += -C_WALL_MU*mass*deltaVn*normalize(vp);
     v.y = 0.0f;  // lock y
     w += cross(nor, -C_WALL_MU*mass*deltaVn*normalize(vp)); // TODO: must not REVERSE!
-    //torque += cross(sideR, -C_WALL_MU*mass*deltaVn*normalize(vp));
     
-    // fake angular stop on straight collision
-    //if (dot(v,nor)-1 < EPS)
+    // fake angular velocity (along normal) canceling
     vec3 tan = nor.z != 0.0f ? vec3(1.0f, 0.0f, 0.0f) : vec3(0.0f, 0.0f, 1.0f);
-    w += -dot(w,tan)*tan;
+    w += -C_WALL_W_CANCEL*dot(w,tan)*tan;
 
     return true;
   }
@@ -100,10 +98,9 @@ bool Ball::intersectBall(Ball& other) {
   vec3 newV = dot(v,tan)*tan + dot(other.v,nor)*nor;
   vec3 newOtherV = dot(other.v,tan)*tan + dot(v,nor)*nor;
 
-  // fake angular stop on straight collision
-  //if (dot(v,nor)-1 < EPS)
-  //w += -dot(w,tan)*tan;
-  //other.w += -dot(other.w,tan)*tan;
+  // fake angular velocity (along normal) canceling
+  w += -C_BALL_W_CANCEL*dot(w,tan)*tan;
+  other.w += -C_BALL_W_CANCEL*dot(other.w,tan)*tan;
 
   // angular
   float deltaVn = abs(dot(newV-v,nor));  // change in v in normal dir
@@ -163,4 +160,11 @@ void Ball::simStep(const float deltaT) {
 
   force = vec3(0.0f);
   torque = vec3(0.0f);
+
+  // stop ball when speeds below threshold
+  if (equalsZero(v,C_STOP_TH) &&
+      equalsZero(w,C_STOP_TH) &&
+      equalsZero(v,C_STOP_TH)) {
+      v = w = vec3(0.0f);
+  }
 }
