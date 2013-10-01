@@ -41,41 +41,46 @@ void Ball::testUpdate() {
 
 bool Ball::intersectBounds() {
 
-  vec3 sideR;  // unit vec ball center to wall, for angular
+  vec3 nor;  // unit vec ball center to wall, for angular
 
   // linear
   if (p.x >= B_H_WIDTH-radius) {
     p.x = B_H_WIDTH-radius-EPS;
     v.x = -C_BOUNCE*v.x;
-    sideR = vec3(1.0f, 0.0f, 0.0f);    
+    nor = vec3(1.0f, 0.0f, 0.0f);    
   }
   else if (p.x <= -B_H_WIDTH+radius) {
     p.x = -B_H_WIDTH+radius+EPS;
     v.x = -C_BOUNCE*v.x;
-    sideR = vec3(-1.0f, 0.0f, 0.0f);
+    nor = vec3(-1.0f, 0.0f, 0.0f);
   }
   if (p.z >= B_H_HEIGHT-radius) {
     p.z = B_H_HEIGHT-radius-EPS;
     v.z = -C_BOUNCE*v.z;
-    sideR = vec3(0.0f, 0.0f, 1.0f);
+    nor = vec3(0.0f, 0.0f, 1.0f);
   }
   else if (p.z <= -B_H_HEIGHT+radius) {
     p.z = -B_H_HEIGHT+radius+EPS;
     v.z = -C_BOUNCE*v.z;
-    sideR = vec3(0.0f, 0.0f, -1.0f);
+    nor = vec3(0.0f, 0.0f, -1.0f);
   }
 
   // angular
-  if (!equalsZero(sideR) && !equalsZero(w)) {
-    float deltaVn = abs(dot(v, sideR))*(1.0f+C_BOUNCE);  // change in normal velocity
-    vec3 vp = cross(w,sideR);  // perimeter velocity
-
+  vec3 vp = cross(w,nor) + v;  // perimeter velocity
+  if (!equalsZero(nor) && !equalsZero(vp)) {
+    float deltaVn = abs(dot(v, nor))*(1.0f+C_BOUNCE);  // change in normal velocity
+    
     // fake, no forces/torques, use C_WALL_MU to control
     v += -C_WALL_MU*mass*deltaVn*normalize(vp);
-    v.y = 0.0f;
-    w += cross(sideR, -C_WALL_MU*mass*deltaVn*normalize(vp)); // TODO: must not REVERSE!
+    v.y = 0.0f;  // lock y
+    w += cross(nor, -C_WALL_MU*mass*deltaVn*normalize(vp)); // TODO: must not REVERSE!
     //torque += cross(sideR, -C_WALL_MU*mass*deltaVn*normalize(vp));
-        
+    
+    // fake angular stop on straight collision
+    //if (dot(v,nor)-1 < EPS)
+    vec3 tan = nor.z != 0.0f ? vec3(1.0f, 0.0f, 0.0f) : vec3(0.0f, 0.0f, 1.0f);
+    w += -dot(w,tan)*tan;
+
     return true;
   }
 
@@ -97,7 +102,8 @@ bool Ball::intersectBall(Ball& other) {
 
   // fake angular stop on straight collision
   //if (dot(v,nor)-1 < EPS)
-  //  w += -dot(w,tan)*tan;
+  //w += -dot(w,tan)*tan;
+  //other.w += -dot(other.w,tan)*tan;
 
   // angular
   float deltaVn = abs(dot(newV-v,nor));  // change in v in normal dir
@@ -114,8 +120,6 @@ bool Ball::intersectBall(Ball& other) {
 }
 
 void Ball::simStep(const float deltaT) {
-
-  intersectBounds();
 
   // 1. COMPUTE FORCES
 

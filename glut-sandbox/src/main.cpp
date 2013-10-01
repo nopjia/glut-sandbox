@@ -16,9 +16,9 @@ namespace {
   int mouseButtons = 0;
 
   // camera
-  float rotateX = 90.0;
-  float rotateY = 0.0;
-  float translateZ = -60.0;
+  float rotateX = 0.0f;
+  float rotateY = 0.0f;
+  float translateZ = -60.0f;
 
   uint frameCount = 0, timeBase = 0;  // fps calc
 
@@ -125,15 +125,22 @@ void update() {
   
   // run sim
   for (; timeSimRemainder>0; timeSimRemainder-=timeSimDelta) {
+    
+    // intersect objects
+    for (int i=0; i<balls.size(); ++i) {
+      // intersect walls
+      balls[i].intersectBounds();
+
+      // intersect balls
+      for (int j=i+1; j<balls.size(); ++j) {
+        balls[i].intersectBall(balls[j]);
+      }
+    }
+
     // update objects
     for (int i=0; i<balls.size(); ++i)
       //balls[i].testUpdate();
       balls[i].simStep(0.01f);  // = 10/1000
-
-    // intersect objects
-    for (int i=0; i<balls.size(); ++i)
-      for (int j=i+1; j<balls.size(); ++j)
-        balls[i].intersectBall(balls[j]);
   }
 
   draw();
@@ -204,10 +211,14 @@ void motion(int x, int y) {
 }
 
 void initScene() {
-  balls.push_back(Ball(-15.0f, 0.0f, 0.0f));
-  balls[0].v.x = 50.0f;
-  //balls[0].w.z = 10.0f;
+  balls.push_back(Ball(0.0f, 0.0f, 0.0f));
+  balls[0].v.x = 100.0f;
+  //balls[0].v.z = 20.0f;
+  //balls[0].w.y = 80.0f;
   
-  balls.push_back(Ball(10.0f, 0.0f, 1.0f));
-  balls.push_back(Ball(10.0f, 0.0f, -1.0f));
+  balls.push_back(Ball(15.0f, 0.0f, 0.5f));
+  //balls[0].w.y = 80.0f;
+  //balls.push_back(Ball(10.0f, 0.0f, -1.0f));
+
+  rotateX = 90.0f;
 }
