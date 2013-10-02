@@ -131,14 +131,13 @@ void Ball::simStep(const float deltaT) {
   
   // rolling friction
   if (!equalsZero(v))
-    force += -C_ROLL_V_MU*mass*C_G*normalize(v);
+    force += -C_ROLL_MU*mass*C_G*normalize(v);
   if (!equalsZero(w))
-    torque += -C_ROLL_W_MU*mass*C_G*normalize(w);
+    torque += -C_ROLL_MU*mass*C_G*normalize(w);
 
   // 2. DERIVATIVES
   
   dp = v;
-  dr = toMat3(angleAxis(3.15f/3.0f, 0.0f,1.0f,0.0f));
   dv = force / mass;
   dw = torque / moi;
 
@@ -151,7 +150,7 @@ void Ball::simStep(const float deltaT) {
   { // special case quaternions
     float wlen = length(w);
     if (wlen > 0.0f) {
-      dq = angleAxis(wlen, w/wlen);   // TODO: where's deltaT???!?      
+      dq = angleAxis(degrees(wlen) * deltaT, w/wlen);
       q = normalize(dq * q);
     }
   }
