@@ -24,7 +24,8 @@ namespace {
 
   uint timer = 0, timerElapsed = 0;
   int timeSimRemainder = 65535;
-  const int timeSimDelta = 20;
+  const int timeSimDelta = 10;
+  const float timeSimDeltaT = timeSimDelta / 1000.0f;
 
   vector<Ball> balls;
 }
@@ -138,7 +139,7 @@ void update() {
     // update objects
     for (int i=0; i<balls.size(); ++i)
       //balls[i].testUpdate();
-      balls[i].simStep(0.01f);  // = 10/1000
+      balls[i].simStep(timeSimDeltaT);
   }
 
   draw();
@@ -219,8 +220,9 @@ void initScene() {
   translateZ = -60.0f;
 
   balls.push_back(Ball(-15.0f, 0.0f, 0.0f));
-  balls[0].v.x = 100.0f;
-  balls[0].w.z = -200.0f;
+  balls[0].v.x = 80.0f;
+  //balls[0].v.z = 50.0f;
+  //balls[0].w.z = 200.0f;
   
   balls.push_back(Ball(15.0f, 0.0f, 0.0f));
 
