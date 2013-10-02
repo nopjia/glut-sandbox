@@ -6,7 +6,7 @@ Ball::Ball(float x, float y, float z) {
   moi = 2.0f/5.0f * mass * radius;  // momoent of intertia
 
   p = vec3(x, y, z);
-  q = quat(1.0f, 0.0f, 0.0f, 0.0f);
+  q = normalize( quat(1.0f, 1.0f, 1.0f, 0.0f) );
   v = vec3(0.0f);
   w = vec3(0.0f);
    
@@ -150,7 +150,12 @@ void Ball::simStep(const float deltaT) {
   { // special case quaternions
     float wlen = length(w);
     if (wlen > 0.0f) {
+      quat dq1 = 0.5f*quat(0,w*deltaT)*q;
+      dq1.w = 1.0f;
+      dq1 = normalize(dq1);
+      //q = normalize(dq * q);
       dq = angleAxis(degrees(wlen) * deltaT, w/wlen);
+      dq = normalize(dq);
       q = normalize(dq * q);
     }
   }

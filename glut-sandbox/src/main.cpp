@@ -32,6 +32,7 @@ namespace {
 
 // global methods
 void initGL();
+void initCamera();
 void initScene();
 void resize(int width, int height);
 void update();
@@ -56,8 +57,9 @@ int main( int argc, char** argv) {
   glutMotionFunc(motion);
 
   initGL();
+  initCamera();
   initScene();
-
+  
   // start main loop
   glutMainLoop();
 
@@ -213,21 +215,24 @@ void motion(int x, int y) {
   mouseY = y;
 }
 
-void initScene() {
-  // setup fake camera
-  rotateX = 90.0f;
+void initCamera() {
+  //rotateX = 90.0f;
   rotateY = 0.0f;
   translateZ = -60.0f;
+}
+
+void initScene() {
 
   balls.push_back(Ball(-15.0f, 0.0f, 0.0f));
-  balls[0].v.x = 80.0f;
+  balls[0].v.x = 20.0f;
+  //balls[0].v.z = 10.0f;
   //balls[0].v.z = 50.0f;
   //balls[0].w.z = 200.0f;
   
-  balls.push_back(Ball(15.0f, 0.0f, 0.0f));
+  //balls.push_back(Ball(15.0f, 0.0f, 0.0f));
 
-  balls.push_back(Ball(17.1f, 0.0f, 1.02f));
-  balls.push_back(Ball(17.1f, 0.0f, -1.02f));
-  balls.push_back(Ball(19.2f, 0.0f, 1.02f));
-  balls.push_back(Ball(19.2f, 0.0f, -1.02f));
+  //balls.push_back(Ball(17.1f, 0.0f, 1.02f));
+  //balls.push_back(Ball(17.1f, 0.0f, -1.02f));
+  //balls.push_back(Ball(19.2f, 0.0f, 1.02f));
+  //balls.push_back(Ball(19.2f, 0.0f, -1.02f));
 }
